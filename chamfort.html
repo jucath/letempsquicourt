@@ -5,7 +5,7 @@
 </head>
 <body>
 
-<h2>Enter your birth date</h2>
+<h2>Entrez votre date de naissance</h2>
 
 <form>
   <label for="birthday">Birthday:</label>
@@ -29,7 +29,7 @@ function calculateDifference() {
   const timeDifference = birthday.getTime() - targetDate.getTime();
   const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24)); // Calculate in days
 
-  document.getElementById('result').innerText = "The difference is " + daysDifference + " days.";
+  document.getElementById('result').innerText = "Vous avez " + daysDifference + " jours d'écart avec Alain Chamfort dans vos dates de naissance.";
 }
 </script>
 
