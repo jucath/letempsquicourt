@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Date de naissance</title>
+<style>
+  :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; }
+  body { margin: 2rem; }
+  .field { display: grid; gap: .5rem; max-width: 360px; }
+  .hint { color: #555; font-size: .9rem; }
+  .row { display: flex; gap: .5rem; align-items: center; }
+  .badge { padding: .2rem .5rem; border-radius: .5rem; background: #eee; }
+  .error { color: #b00020; }
+  button { padding: .6rem .9rem; border: 1px solid #ddd; border-radius: .6rem; background: #f8f8f8; cursor: pointer; }
+</style>
+</head>
+<body>
+  <form id="dob-form" class="field" novalidate>
+    <label for="dob">Date de naissance</label>
+    <input id="dob" name="dob" type="date" required />
+    <div class="row">
+      <span id="age" class="badge">Âge : —</span>
+      <span id="fmt" class="hint">ISO : — | FR : —</span>
+    </div>
+    <span id="err" class="error" role="alert" aria-live="polite"></span>
+    <div class="row">
+      <button type="submit">Valider</button>
+      <button type="button" id="clear">Effacer</button>
+    </div>
+  </form>
+
+<script>
+(function () {
+  const input = document.getElementById('dob');
+  const ageEl = document.getElementById('age');
+  const fmtEl = document.getElementById('fmt');
+  const errEl = document.getElementById('err');
+  const form = document.getElementById('dob-form');
+  const clearBtn = document.getElementById('clear');
+
+  // Limites : 1900-01-01 → aujourd’hui
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+  input.max = `${yyyy}-${mm}-${dd}`;
+  input.min = `1900-01-01`;
+
+  function calcAge(d) {
+    const t = new Date();
+    let a = t.getFullYear() - d.getFullYear();
+    const m = t.getMonth() - d.getMonth();
+    if (m < 0 || (m === 0 && t.getDate() < d.getDate())) a--;
+    return a;
+  }
+
+  function formatFR(d) {
+    return d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  }
+
+  function update() {
+    errEl.textContent = '';
+    const v = input.value;
+    if (!v) {
+      ageEl.textContent = 'Âge : —';
+      fmtEl.textContent = 'ISO : — | FR : —';
+      return;
+    }
+    const d = new Date(v + 'T00:00:00');
+    if (isNaN(d)) {
+      errEl.textContent = 'Date invalide.';
+      return;
+    }
+    if (d > today) {
+      errEl.textContent = 'La date ne peut pas être dans le futur.';
+      return;
+    }
+    if (d < new Date(input.min)) {
+      errEl.textContent = `La date doit être ≥ ${input.min}.`;
+      return;
+    }
+    const age = calcAge(d);
+    ageEl.textContent = `Âge : ${age} ans`;
+    fmtEl.textContent = `ISO : ${v} | FR : ${formatFR(d)}`;
+  }
+
+  input.addEventListener('input', update);
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    update();
+    if (!errEl.textContent && input.value) {
+      // Exemple de règle: refuser < 13 ans (optionnel, commente si inutile)
+      const age = calcAge(new Date(input.value + 'T00:00:00'));
+      if (age < 13) {
+        errEl.textContent = 'Désolé, il faut avoir au moins 13 ans.';
+        return;
+      }
+      alert(`OK, date enregistrée : ${input.value}`);
+    }
+  });
+  clearBtn.addEventListener('click', () => { input.value = ''; update(); });
+
+  // Premier rendu
+  update();
+})();
+</script>
+</body>
+</html>
