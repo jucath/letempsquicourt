@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Birth Date Input</title>
+</head>
+<body>
+
+<h2>Enter your birth date</h2>
+
+<form>
+  <label for="birthday">Birthday:</label>
+  <input type="date" id="birthday" name="birthday">
+  <button type="button" onclick="calculateDifference()">Calculate Difference</button>
+</form>
+
+<p id="result"></p>
+
+<script>
+function calculateDifference() {
+  const birthdayInput = document.getElementById('birthday').value;
+  const birthday = new Date(birthdayInput);
+  const targetDate = new Date('1949-03-02');
+
+  if (isNaN(birthday.getTime())) {
+    document.getElementById('result').innerText = "Please enter a valid date.";
+    return;
+  }
+
+  const timeDifference = birthday.getTime() - targetDate.getTime();
+  const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24)); // Calculate in days
+
+  document.getElementById('result').innerText = "The difference is " + daysDifference + " days.";
+}
+</script>
+
+</body>
+</html>
